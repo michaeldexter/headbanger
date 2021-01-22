@@ -12,7 +12,7 @@ direct the build output to /usr.obj/
 
 `$ cd /usr/src ; make buildworld ; make buildkernel ; cd release ; make release`
 
-The additional 1700+ lines help:
+The additional 1650+ lines help:
 
 * Check out sources from SVN or Git
 * Select a stock or custom KERNCONF
