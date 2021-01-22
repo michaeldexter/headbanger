@@ -24,7 +24,7 @@ The additional 1650+ lines help:
 * Build to tmpfs and rsync the results to another host
 * Resume all steps based on .done breadcrumb files
 
-In practice, this script allows up.bsd.lv to maintain a centralized  
+In practice, this script allows [up.bsd.lv](https://up.bsd.lv) to maintain a centralized  
 source/binary object server and have multiple higher-performance  
 hosts perform builds for multiple revisions and architectures.  
 
