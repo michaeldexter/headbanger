@@ -87,5 +87,7 @@ You *will* find additional issues
 
 ## ACKNOWLEDGMENTS
 
-Thank you Conor Beh for your extensive help with the [up.bsd.lv](https://up.bsd.lv) effort.  
+Thank you Conor Beh for your extensive help with the [up.bsd.lv](https://up.bsd.lv) effort.
 Thank you dteske@ for your years of /bin/sh mentorship.
+
+This is not a desired endorsement of GitHub
