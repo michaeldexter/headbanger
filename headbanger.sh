@@ -217,13 +217,13 @@ fi # End if log_dir
 if [ -f /etc/src.conf ]; then
 	echo
 	echo /etc/src.conf exists
-	echo Type d to delete or the elusive ANY key to exit
+	echo Type d to delete
+	echo Type any other key to exite
 	read response
 	if [ "$response" = "d" ]; then
 		rm /etc/src.conf
 	else
 		exit 1
-	:w
 	fi
 fi
 
