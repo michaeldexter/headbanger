@@ -214,6 +214,19 @@ if ! [ -d "${log_dir}" ]; then
 	}
 fi # End if log_dir
 
+if [ -f /etc/src.conf ]; then
+	echo
+	echo /etc/src.conf exists
+	echo Type d to delete or the elusive ANY key to exit
+	read response
+	if [ "$response" = "d" ]; then
+		rm /etc/src.conf
+	else
+		exit 1
+	:w
+	fi
+fi
+
 echo -----------------------------------------
 echo ---------- Validating Sources -----------
 echo -----------------------------------------
