@@ -223,6 +223,7 @@ if [ -f /etc/src.conf ]; then
 		rm /etc/src.conf
 	else
 		exit 1
+	:w
 	fi
 fi
 
@@ -1063,10 +1064,6 @@ if [ "$must_build_vmimage" = 1 ]; then
 	echo Logging to ${log_dir}/vmimage-${target}.log
 	date
 
-	if [ "${target}" = "arm64" ]; then
-		#cd ${src_dir}/release
-		# Moving to make -C ${src_dir}/release syntax
-
 		echo
 		echo Running vmimage string $vmimage_string
 
@@ -1074,93 +1071,6 @@ if [ "$must_build_vmimage" = 1 ]; then
 			echo make vmimage failed. See ${log_dir}/vmimage-${target}.log
 			exit 1
 		}
-	else
-		truncate -s 8G ${obj_dir}/release/vm.raw || {
-			echo truncate failed
-			exit 1
-		}
-
-		vmimg_md=$(mdconfig -af ${obj_dir}/release/vm.raw)
-
-		echo Partitioning and formating $vmimg_md
-		gpart create -s gpt $vmimg_md
-		gpart add -t freebsd-boot -l bootfs -b 128 -s 128K $vmimg_md
-		gpart bootcode -b /boot/pmbr -p /boot/gptboot -i 1 $vmimg_md
-		gpart add -t freebsd-swap -l swapfs -s 1G $vmimg_md
-		gpart add -t freebsd-ufs -l rootfs $vmimg_md
-		echo The vm-image partitioning is:
-		gpart show $vmimg_md
-		newfs -U /dev/${vmimg_md}p3 || {
-			echo newfs failed
-			exit 1
-		}
-
-		echo Mounting ${vmimg_md}p3
-		mount /dev/${vmimg_md}p3 /mnt || {
-			echo mount failed
-			exit 1
-		}
-
-		echo Extracting ${obj_dir}/release/base.txz and kernel.txz
-		[ -f ${obj_dir}/release/base.txz ] || {
-			echo base.txz not found
-			exit 1
-		}
-		tar xzf ${obj_dir}/release/base.txz -C /mnt || {
-			echo base.txz extraction failed
-			exit 1
-		}
-		[ -f ${obj_dir}/release/kernel.txz ] || {
-			echo kernel.txz not found
-			exit 1
-		}
-		tar xzf ${obj_dir}/release/kernel.txz -C /mnt || {
-			echo kernel.txz extraction failed
-			exit 1
-		}
-
-		tee -a /mnt/etc/rc.conf <<EOF
-hostname="freebsd"
-ifconfig_DEFAULT="DHCP inet6 accept_rtadv"
-growfs_enable=YES
-EOF
-		[ "$?" = 0 ] || {
-			echo rc.conf generation failed
-			exit 1
-		}
-
-		echo "/dev/gpt/rootfs	/	ufs	rw,noatime	1	1" >/mnt/etc/fstab
-		echo "/dev/gpt/swapfs	none	swap	sw	1	1" >>/mnt/etc/fstab || {
-			echo fstab generation failed
-			exit 1
-		}
-
-		touch /mnt/firstboot
-
-		echo loader.conf
-		tee -a /mnt/boot/loader.conf <<EOF
-kern.geom.label.disk_ident.enable="0"
-kern.geom.label.gptid.enable="0"
-autoboot_delay="5"
-EOF
-		[ "$?" = 0 ] || {
-			echo loader.conf generation failed
-			exit 1
-		}
-
-		tzsetup -s -C /mnt UTC || {
-			echo tzsetup generation failed
-			exit 1
-		}
-
-		echo Unmounting /mnt
-		umount /mnt
-
-		echo Destroying $vmimg_md
-		mdconfig -du $vmimg_md
-		mdconfig -lv
-	fi # End if arm64
-
 	if [ "$tmpfs_host" ]; then
 		touch ${log_dir}/tmpfs-vmimage-${target}.done
 	else
